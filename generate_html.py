@@ -2,16 +2,9 @@ import os
 import markdown2
 from bs4 import BeautifulSoup
 
-# mdinput = open("2023_12_04_Hemsida.md").read()
-
-# html = markdown2.markdown(mdinput)
-# print(html)
-
 #output folder for baked and root of ready website
 OUTPUT_FOLDER = "./out"
 OUTPUT_ARTICLES_FOLDER =OUTPUT_FOLDER+"/art"
-
-
 
 def create_folders():
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -28,9 +21,19 @@ def generate_relative_url(location, destination):
         return result
 
 def generate_html(location=[]):
+    create_folders()
+    articles_dir = './articles'
+    listing = os.listdir(articles_dir)
+    articles = [entry for entry in listing if os.path.isfile(os.path.join(articles_dir, entry))]
+    articles.sort(reverse=True)
+    with open( os.path.join(articles_dir, articles[0]), "r") as article_markdown_file:
+        article_md = article_markdown_file.read()
+    content = markdown2.markdown(article_md)
     with open("template.html", "r") as file:
         html_template = file.read()
-    return html_template.replace("<!--list-group-->", "\n".join(generate_list(location=location)) )
+    html =  html_template.replace("<!--list-group-->", "\n".join(generate_list(location=location)) )
+    html = html.replace( "<!--content-->", content)
+    return html
 
 def generate_list(location=[]):
     items = []
@@ -55,7 +58,6 @@ def generate_list_group_item(title, desc, url, location=[]):
     relative_url = "/".join(generate_relative_url(location, ["art"])+[url]) 
     html = html.replace("{url}", relative_url)
     return html
-
 
 def generate_articles():
     create_folders()
