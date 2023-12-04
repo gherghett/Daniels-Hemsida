@@ -12,19 +12,27 @@ def create_folders():
 
 def generate_relative_url(location, destination):
     result = []
-    if len(location) <= len(destination):
-        behind = -1
-        for i in range(len(location)):
-            if location[i] == destination[i]:
-                behind = i
-        result = [".."]*behind+destination[behind+1:]
-        return result
+    back = 0
+    if len(location) > len(destination):
+        back = len(location)-len(destination)
+    common_length = min(len(location), len(destination))
+    break_index = common_length
+    for i in range(common_length-1, -1, -1):
+        if location[i] != destination[i] :
+            back += 1
+            break_index = i
+    result = [".."]*back + destination[break_index:]
+    if len(result)>0:
+        return "/".join(result)
+    return ""
 
 def generate_html(location=[]):
     create_folders()
     with open("template.html", "r") as file:
         html_template = file.read()
     html =  html_template.replace("<!--list-group-->", "\n".join(generate_list(location=location)) )
+    relative_path_home = generate_relative_url(location, [])
+    html = html.replace("{home}", relative_path_home)
     return html
 
 def generate_list(location=[]):
@@ -38,6 +46,7 @@ def generate_list(location=[]):
             title = template[3:template.index("\n")] #every document should start with a h2 so " ##" 
             desc = template.splitlines()[2] #the first line of the text
             url = filename.split(".")[0]+".html"
+            print(url)
             items.append(generate_list_group_item(title, desc, url, location))
     return items
 
@@ -47,7 +56,8 @@ def generate_list_group_item(title, desc, url, location=[]):
     html = list_group_item_template
     html = html.replace("{title}", title)
     html = html.replace("{desc}", desc)
-    relative_url = "/".join(generate_relative_url(location, ["art"])+[url]) 
+    relative_url = generate_relative_url(location, ["art", url])
+    print(relative_url)
     html = html.replace("{url}", relative_url)
     return html
 
@@ -83,4 +93,4 @@ def generate_start_page():
         output.write(formatted)
 
 generate_start_page()
-# generate_articles()
+generate_articles()
