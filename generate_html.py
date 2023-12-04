@@ -22,17 +22,9 @@ def generate_relative_url(location, destination):
 
 def generate_html(location=[]):
     create_folders()
-    articles_dir = './articles'
-    listing = os.listdir(articles_dir)
-    articles = [entry for entry in listing if os.path.isfile(os.path.join(articles_dir, entry))]
-    articles.sort(reverse=True)
-    with open( os.path.join(articles_dir, articles[0]), "r") as article_markdown_file:
-        article_md = article_markdown_file.read()
-    content = markdown2.markdown(article_md)
     with open("template.html", "r") as file:
         html_template = file.read()
     html =  html_template.replace("<!--list-group-->", "\n".join(generate_list(location=location)) )
-    html = html.replace( "<!--content-->", content)
     return html
 
 def generate_list(location=[]):
@@ -75,14 +67,20 @@ def generate_articles():
             with open("./out/art/"+output_filename, "w") as output_file:
                 output_file.write(html)
             
+def generate_start_page():
+    create_folders()
+    articles_dir = './articles'
+    listing = os.listdir(articles_dir)
+    articles = [entry for entry in listing if os.path.isfile(os.path.join(articles_dir, entry))]
+    articles.sort(reverse=True)
+    with open( os.path.join(articles_dir, articles[0]), "r") as article_markdown_file:
+        article_md = article_markdown_file.read()
+    content = markdown2.markdown(article_md)
+    html = generate_html().replace("<!--content-->", content)
+    soup = BeautifulSoup(html, 'html.parser')
+    formatted = soup.prettify()
+    with open(OUTPUT_FOLDER+"/index.html", "w") as output:
+        output.write(formatted)
 
-generate_articles()
-
-html = generate_html()
-
-soup = BeautifulSoup(html, 'html.parser')
-formatted = soup.prettify()
-print(formatted)
-
-with open("./out/output.html", "w") as output:
-    output.write(formatted)
+generate_start_page()
+# generate_articles()
