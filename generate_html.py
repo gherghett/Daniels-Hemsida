@@ -7,30 +7,32 @@ from bs4 import BeautifulSoup
 # html = markdown2.markdown(mdinput)
 # print(html)
 
-#output folder
+#output folder for baked and root of ready website
+OUTPUT_FOLDER = "./out"
+OUTPUT_ARTICLES_FOLDER =OUTPUT_FOLDER+"/art"
 
-with open("list_group_item_template.html", "r") as file:
-    list_group_item_template = file.read()
+
 
 def create_folders():
-    if not os.path.exists("./out"):
-    # Create the directory
-    os.makedirs(directory)
+    os.makedirs(OUTPUT_FOLDER, exist_ok=True)
+    os.makedirs(OUTPUT_ARTICLES_FOLDER, exist_ok=True)
 
-def generate_list_group_item(title, desc, url):
-    html = list_group_item_template
-    html = html.replace("{title}", title)
-    html = html.replace("{desc}", desc)
-    html = html.replace("{url}", url)
-    return html
+def generate_relative_url(location, destination):
+    result = []
+    if len(location) <= len(destination):
+        behind = -1
+        for i in range(len(location)):
+            if location[i] == destination[i]:
+                behind = i
+        result = [".."]*behind+destination[behind+1:]
+        return result
 
-with open("template.html", "r") as file:
-    html_template = file.read()
+def generate_html(location=[]):
+    with open("template.html", "r") as file:
+        html_template = file.read()
+    return html_template.replace("<!--list-group-->", "\n".join(generate_list(location=location)) )
 
-def generate_html():
-    return html_template.replace("<!--list-group-->", "\n".join(generate_list()) )
-
-def generate_list():
+def generate_list(location=[]):
     items = []
     directory = './articles'
     for filename in os.listdir(directory):
@@ -40,29 +42,45 @@ def generate_list():
                 template = file.read()
             title = template[3:template.index("\n")] #every document should start with a h2 so " ##" 
             desc = template.splitlines()[2] #the first line of the text
-            url = filename.split(".")[0]+"html"
-            items.append(generate_list_group_item(title, desc, url))
+            url = filename.split(".")[0]+".html"
+            items.append(generate_list_group_item(title, desc, url, location))
     return items
 
+def generate_list_group_item(title, desc, url, location=[]):
+    with open("list_group_item_template.html", "r") as file:
+        list_group_item_template = file.read()
+    html = list_group_item_template
+    html = html.replace("{title}", title)
+    html = html.replace("{desc}", desc)
+    relative_url = "/".join(generate_relative_url(location, ["art"])+[url]) 
+    html = html.replace("{url}", relative_url)
+    return html
+
+
 def generate_articles():
+    create_folders()
     directory = './articles'
     for filename in os.listdir(directory):
         filepath = os.path.join(directory, filename)
         if os.path.isfile(filepath):
             with open(filepath, "r") as file:
                 markdown_input = file.read()
-            html = markdown2.markdown(markdown_input)
-            output_filename = filename.split(".")[0]+"html"
+            content_html = markdown2.markdown(markdown_input)
+            html = generate_html(location=["art"]).replace("<!--content-->", content_html)
+            soup = BeautifulSoup(html, 'html.parser')
+            html = soup.prettify()
+            output_filename = filename.split(".")[0]+".html"
             with open("./out/art/"+output_filename, "w") as output_file:
                 output_file.write(html)
             
 
 generate_articles()
-# html = generate_html()
 
-# soup = BeautifulSoup(html, 'html.parser')
-# formatted = soup.prettify()
-# print(formatted)
+html = generate_html()
 
-# with open("./out/output.html", "w") as output:
-#     output.write(formatted)
+soup = BeautifulSoup(html, 'html.parser')
+formatted = soup.prettify()
+print(formatted)
+
+with open("./out/output.html", "w") as output:
+    output.write(formatted)
