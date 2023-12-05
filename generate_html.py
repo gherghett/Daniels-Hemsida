@@ -4,7 +4,7 @@ from bs4 import BeautifulSoup
 
 #output folder for baked and root of ready website
 OUTPUT_FOLDER = "./out"
-OUTPUT_ARTICLES_FOLDER =OUTPUT_FOLDER+"/art"
+OUTPUT_ARTICLES_FOLDER = OUTPUT_FOLDER+"/art"
 
 def create_folders():
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
