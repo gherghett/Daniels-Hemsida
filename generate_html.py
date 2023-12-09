@@ -11,7 +11,7 @@ def create_folders():
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
     os.makedirs(OUTPUT_ARTICLES_FOLDER, exist_ok=True)
 
-def generate_relative_url(location, destination):
+def relative_url(location, destination):
     result = []
     back = 0
     if len(location) > len(destination):
@@ -32,9 +32,29 @@ def generate_html(location=[]):
     with open(os.path.join(TEMPLATES_FOLDER, "template.html"), "r") as file:
         html_template = file.read()
     html =  html_template.replace("<!--list-group-->", "\n".join(generate_list(location=location)) )
-    relative_path_home = generate_relative_url(location, [])
+    relative_path_home = relative_url(location, [])
     html = html.replace("{home}", relative_path_home)
+    html = html.replace("<!--navbar-->", generate_navbar(location))
     return html
+
+def generate_navbar(location=[]):
+    with open(os.path.join(TEMPLATES_FOLDER, "navbar.html"), "r") as navbar_file:
+        navbar_html = navbar_file.read()
+    pages = [ #the links must be in same order as in the template file navbar.html
+        ["index.html"],
+        ["artiklar.html"],
+        ["kontakt.html"],
+    ]
+    soup = BeautifulSoup(navbar_html, 'html.parser')
+    nav_links = soup.find_all('a', class_='nav-link')
+    page = 0
+    for link in nav_links:
+        link['href'] = relative_url(location, pages[page])
+        if( pages[page] == location ):
+            link['aria-current'] = page
+            link['class'].append('active')
+        page += 1
+    return str(soup)
 
 def generate_list(location=[]):
     items = []
@@ -57,9 +77,9 @@ def generate_list_group_item(title, desc, url, location=[]):
     html = list_group_item_template
     html = html.replace("{title}", title)
     html = html.replace("{desc}", desc)
-    relative_url = generate_relative_url(location, ["art", url])
-    print(relative_url)
-    html = html.replace("{url}", relative_url)
+    r_url = relative_url(location, ["art", url])
+    # print(r_url)
+    html = html.replace("{url}", r_url)
     return html
 
 def generate_intro():
@@ -102,5 +122,23 @@ def generate_start_page():
     with open(OUTPUT_FOLDER+"/index.html", "w") as output:
         output.write(formatted)
 
+#länken kan vara till första artiklen
+def generate_artiklar_page():
+    create_folders()
+    articles_dir = './articles'
+    listing = os.listdir(articles_dir)
+    articles = [entry for entry in listing if os.path.isfile(os.path.join(articles_dir, entry))]
+    articles.sort(reverse=True)
+    with open( os.path.join(articles_dir, articles[0]), "r") as article_markdown_file:
+        article_md = article_markdown_file.read()
+    content = markdown2.markdown(article_md)
+    html = generate_html([]).replace("<!--content-->", content)
+    soup = BeautifulSoup(html, 'html.parser')
+    formatted = soup.prettify()
+    with open(OUTPUT_FOLDER+"/artiklar.html", "w") as output:
+        output.write(formatted)
+
+        
 generate_start_page()
 generate_articles()
+generate_artiklar_page()
