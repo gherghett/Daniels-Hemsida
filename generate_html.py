@@ -6,6 +6,7 @@ from bs4 import BeautifulSoup
 OUTPUT_FOLDER = "./out"
 OUTPUT_ARTICLES_FOLDER = OUTPUT_FOLDER+"/art"
 TEMPLATES_FOLDER = "./templates"
+PAGES_FOLDER = "./pages"
 
 def create_folders():
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -43,16 +44,27 @@ def generate_navbar(location=[]):
     pages = [ #the links must be in same order as in the template file navbar.html
         ["index.html"],
         ["artiklar.html"],
-        ["kontakt.html"],
-    ]
+    ] 
+    pages += [[file_name.split(".")[0]+".html"] for file_name in os.listdir(PAGES_FOLDER)]
+
     soup = BeautifulSoup(navbar_html, 'html.parser')
     nav_links = soup.find_all('a', class_='nav-link')
+    if len(nav_links) <= len(pages):
+        links_to_add = len(pages) - len(nav_links)
+        with open(os.path.join(TEMPLATES_FOLDER, "nav_item.html"), "r") as link_html_file:
+            new_link = link_html_file.read()      
+        for i in range(links_to_add):
+            navbar_html = navbar_html.replace("<!--add-->", new_link)
+        soup = BeautifulSoup(navbar_html, 'html.parser')
+        nav_links = soup.find_all('a', class_='nav-link')
     page = 0
     for link in nav_links:
         link['href'] = relative_url(location, pages[page])
         if( pages[page] == location ):
             link['aria-current'] = page
             link['class'].append('active')
+        if page > 0:
+            link.string = pages[page][0].split(".")[0].title()
         page += 1
     return str(soup)
 
@@ -138,7 +150,22 @@ def generate_artiklar_page():
     with open(OUTPUT_FOLDER+"/artiklar.html", "w") as output:
         output.write(formatted)
 
+#makes all pages in the pages folder
+def generate_pages():
+    for entry in os.listdir(PAGES_FOLDER):
+        full_file_path = os.path.join(PAGES_FOLDER, entry)
+        with open(full_file_path, "r") as file:
+            md = file.read()
+        content = markdown2.markdown(md)
+        html = generate_html().replace("<!--content-->", content)
+        soup = BeautifulSoup(html, 'html.parser')
+        formatted = soup.prettify()
+        html_file_name = entry.split(".")[0]+".html"
+        with open(os.path.join(OUTPUT_FOLDER, html_file_name), "w") as output:
+            output.write(formatted)
+        
         
 generate_start_page()
 generate_articles()
 generate_artiklar_page()
+generate_pages()
