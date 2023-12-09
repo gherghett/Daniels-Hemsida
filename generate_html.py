@@ -62,6 +62,15 @@ def generate_list_group_item(title, desc, url, location=[]):
     html = html.replace("{url}", relative_url)
     return html
 
+def generate_intro():
+    with open( "content/intro.md", "r") as intro_markdown_file:
+        intro_md = intro_markdown_file.read()
+    content = markdown2.markdown(intro_md)
+    with open( os.path.join(TEMPLATES_FOLDER, "intro.html"), "r") as intro_template_file:
+        intro_template = intro_template_file.read()
+    html = intro_template.replace("<!--content-->", content )
+    return html
+
 def generate_articles():
     create_folders()
     directory = './articles'
@@ -86,9 +95,7 @@ def generate_start_page():
     articles.sort(reverse=True)
     with open( os.path.join(articles_dir, articles[0]), "r") as article_markdown_file:
         article_md = article_markdown_file.read()
-    with open( "content/intro.md", "r") as intro_markdown_file:
-        intro_md = intro_markdown_file.read()
-    content = markdown2.markdown(article_md) + markdown2.markdown(intro_md)
+    content = generate_intro() + "<span>Senaste:</span>" + markdown2.markdown(article_md)
     html = generate_html().replace("<!--content-->", content)
     soup = BeautifulSoup(html, 'html.parser')
     formatted = soup.prettify()

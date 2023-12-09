@@ -1,4 +1,6 @@
 .vscode/settings.json
-articles/
-out/
+articles/*
+out/*
 generate_url.py
+main.py
+index.html
