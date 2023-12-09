@@ -5,6 +5,7 @@ from bs4 import BeautifulSoup
 #output folder for baked and root of ready website
 OUTPUT_FOLDER = "./out"
 OUTPUT_ARTICLES_FOLDER = OUTPUT_FOLDER+"/art"
+TEMPLATES_FOLDER = "./templates"
 
 def create_folders():
     os.makedirs(OUTPUT_FOLDER, exist_ok=True)
@@ -28,7 +29,7 @@ def generate_relative_url(location, destination):
 
 def generate_html(location=[]):
     create_folders()
-    with open("template.html", "r") as file:
+    with open(os.path.join(TEMPLATES_FOLDER, "template.html"), "r") as file:
         html_template = file.read()
     html =  html_template.replace("<!--list-group-->", "\n".join(generate_list(location=location)) )
     relative_path_home = generate_relative_url(location, [])
@@ -51,7 +52,7 @@ def generate_list(location=[]):
     return items
 
 def generate_list_group_item(title, desc, url, location=[]):
-    with open("list_group_item_template.html", "r") as file:
+    with open(os.path.join(TEMPLATES_FOLDER, "list_group_item_template.html"), "r") as file:
         list_group_item_template = file.read()
     html = list_group_item_template
     html = html.replace("{title}", title)
@@ -85,7 +86,9 @@ def generate_start_page():
     articles.sort(reverse=True)
     with open( os.path.join(articles_dir, articles[0]), "r") as article_markdown_file:
         article_md = article_markdown_file.read()
-    content = markdown2.markdown(article_md)
+    with open( "content/intro.md", "r") as intro_markdown_file:
+        intro_md = intro_markdown_file.read()
+    content = markdown2.markdown(article_md) + markdown2.markdown(intro_md)
     html = generate_html().replace("<!--content-->", content)
     soup = BeautifulSoup(html, 'html.parser')
     formatted = soup.prettify()
