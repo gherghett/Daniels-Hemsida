@@ -28,6 +28,20 @@ def relative_url(location, destination):
         return "/".join(result)
     return ""
 
+def apply_styles(html):
+    soup = BeautifulSoup(html, "html.parser")
+    pre_tag_classes = [
+        "border",
+        "border-secondary",
+        "rounded",
+        "bg-secondary"
+    ]
+    for pre_tag in soup.find_all('pre'):
+        pre_tag['class'] = pre_tag.get('class', []) + pre_tag_classes
+
+    return str(soup)
+
+
 def generate_html(location=[]):
     create_folders()
     with open(os.path.join(TEMPLATES_FOLDER, "template.html"), "r") as file:
@@ -115,6 +129,7 @@ def generate_articles():
             html = generate_html(location=["art"]).replace("<!--content-->", content_html)
             soup = BeautifulSoup(html, 'html.parser')
             html = soup.prettify()
+            html = apply_styles(str(html))
             output_filename = filename.split(".")[0]+".html"
             with open("./out/art/"+output_filename, "w") as output_file:
                 output_file.write(html)
