@@ -15,3 +15,8 @@ Inside "generate_html.py" the site generation takes place, here all relevant fil
 ## Dependencies
 
 [BeautifulSoup](https://pypi.org/project/beautifulsoup4/) are used for prettification and some html editing and [markdown2](https://github.com/trentm/python-markdown2) are used for html generation.
+
+## Todo
+- add darkmode toggle
+- add dates for articles
+- change margin on content on bg screens

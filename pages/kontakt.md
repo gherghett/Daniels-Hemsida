@@ -2,6 +2,6 @@
 
 gherghetta@gmail.com
 
-[github](#)
+[Min github](https://github.com/gherghett/Daniels-Hemsida)
 
-etc
+[Min Linked In](https://www.linkedin.com/in/daniel-gherghetta-940a7b298/) inte mycket där.

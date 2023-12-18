@@ -1,9 +1,9 @@
-## Titel
+## En Personlig Hemsida
 
-Mitt namn är Daniel och detta är min hemsida. Här finns olika grejer jag gjort ta en titt omkring!
+Mitt namn är Daniel och detta är min hemsida. Den är ny och ganska tom. Här finns olika grejer jag gjort ta en titt omkring!
 
 - Min [GitHub](https://github.com/gherghett)
-- asda
-- grejer
+- [Kontakt](./kontakt.html)
+- Läs om [Hur jag gjorde denna hemsidan](./art/2023_12_18_Hemsida.html)
 
-kasnke lite länkar [hit](https://google.com) och [dit](https://duckduckgo.com/) också
+Hoppas du hittar det du letar efter.
