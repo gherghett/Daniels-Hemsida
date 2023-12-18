@@ -161,6 +161,15 @@ def generate_artiklar_page():
     content = markdown2.markdown(article_md)
     html = generate_html([]).replace("<!--content-->", content)
     soup = BeautifulSoup(html, 'html.parser')
+    content_div = soup.find(id='content')
+
+    # add classes to hide content on small screens
+    additional_classes = ['d-none', 'd-lg-block']
+    if content_div.has_attr('class'):
+        content_div['class'].extend(additional_classes)
+    else:
+        content_div['class'] = additional_classes
+        
     formatted = soup.prettify()
     with open(OUTPUT_FOLDER+"/artiklar.html", "w") as output:
         output.write(formatted)
