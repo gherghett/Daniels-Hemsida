@@ -38,9 +38,15 @@ def apply_styles(html):
     ]
     for pre_tag in soup.find_all('pre'):
         pre_tag['class'] = pre_tag.get('class', []) + pre_tag_classes
-
+    for img_tag in soup.find_all('img'):
+        img_tag['class'] = img_tag.get('class', []) + ["img-fluid"]
     return str(soup)
 
+def make_img_urls_relative(html, location):
+    soup = BeautifulSoup(html, "html.parser")
+    for img_tag in soup.find_all('img'):
+        img_tag['src'] = relative_url(location, [img_tag['src']])
+    return str(soup)
 
 def generate_html(location=[]):
     create_folders()
@@ -125,7 +131,7 @@ def generate_articles():
         if os.path.isfile(filepath):
             with open(filepath, "r") as file:
                 markdown_input = file.read()
-            content_html = markdown2.markdown(markdown_input)
+            content_html = make_img_urls_relative(markdown2.markdown(markdown_input), ["art"])
             html = generate_html(location=["art"]).replace("<!--content-->", content_html)
             soup = BeautifulSoup(html, 'html.parser')
             html = soup.prettify()
