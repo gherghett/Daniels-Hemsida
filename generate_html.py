@@ -47,7 +47,7 @@ def generate_html(location=[]):
     with open(os.path.join(TEMPLATES_FOLDER, "template.html"), "r") as file:
         html_template = file.read()
     html =  html_template.replace("<!--list-group-->", "\n".join(generate_list(location=location)) )
-    relative_path_home = relative_url(location, [])
+    relative_path_home = relative_url(location, ["index.html"])
     html = html.replace("{home}", relative_path_home)
     html = html.replace("<!--navbar-->", generate_navbar(location))
     return html
@@ -169,7 +169,7 @@ def generate_artiklar_page():
         content_div['class'].extend(additional_classes)
     else:
         content_div['class'] = additional_classes
-        
+
     formatted = soup.prettify()
     with open(OUTPUT_FOLDER+"/artiklar.html", "w") as output:
         output.write(formatted)
