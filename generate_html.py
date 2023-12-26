@@ -34,7 +34,8 @@ def apply_styles(html):
         "border",
         "border-secondary",
         "rounded",
-        "bg-secondary"
+        "bg-secondary",
+        "p-4",
     ]
     for pre_tag in soup.find_all('pre'):
         pre_tag['class'] = pre_tag.get('class', []) + pre_tag_classes
@@ -150,6 +151,7 @@ def generate_start_page():
         article_md = article_markdown_file.read()
     content = generate_intro() + "<span>Senaste:</span>" + markdown2.markdown(article_md)
     html = generate_html().replace("<!--content-->", content)
+    html = apply_styles(html)
     soup = BeautifulSoup(html, 'html.parser')
     formatted = soup.prettify()
     with open(OUTPUT_FOLDER+"/index.html", "w") as output:
@@ -166,6 +168,7 @@ def generate_artiklar_page():
         article_md = article_markdown_file.read()
     content = markdown2.markdown(article_md)
     html = generate_html([]).replace("<!--content-->", content)
+    html = apply_styles(html)
     soup = BeautifulSoup(html, 'html.parser')
     content_div = soup.find(id='content')
 
@@ -193,7 +196,6 @@ def generate_pages():
         html_file_name = entry.split(".")[0]+".html"
         with open(os.path.join(OUTPUT_FOLDER, html_file_name), "w") as output:
             output.write(formatted)
-        
         
 generate_start_page()
 generate_articles()
