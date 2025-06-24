@@ -1,4 +1,3 @@
-
 name: Build and Deploy to VPS
 
 on:
@@ -47,6 +46,6 @@ jobs:
         ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
         ssh -vvv -i ~/.ssh/id_ed25519 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo SSH OK"
-        rsync -avz --delete -e "ssh -i ~/.ssh/id_ed25519" ./out/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
+        rsync -avz --delete -e "ssh -i ~/.ssh/id_ed25519" ./out/ ./www/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
 
 
