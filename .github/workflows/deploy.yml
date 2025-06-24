@@ -1,0 +1,40 @@
+
+name: Build and Deploy to VPS
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Generate site
+      run: python generate.py
+
+    - name: Deploy via rsync over SSH
+      uses: burnett01/rsync-deployments@v6
+      with:
+        switches: -avz --delete
+        path: ./out/
+        remote_path: /var/www/html/
+        remote_host: ${{ secrets.VPS_HOST }}
+        remote_user: ${{ secrets.VPS_USER }}
+        remote_key: ${{ secrets.VPS_DEPLOY_KEY }}
+
+
