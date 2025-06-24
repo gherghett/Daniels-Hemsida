@@ -27,14 +27,13 @@ jobs:
     - name: Generate site
       run: python generate_html.py
 
-    - name: Deploy via rsync over SSH
-      uses: burnett01/rsync-deployments@7.0.2
-      with:
-        switches: -avz --delete
-        path: ./out/
-        remote_path: /var/www/html/
-        remote_host: ${{ secrets.VPS_HOST }}
-        remote_user: ${{ secrets.VPS_USER }}
-        remote_key: ${{ secrets.VPS_DEPLOY_KEY }}
+    - name: Deploy manually with rsync
+      run: |
+        mkdir -p ~/.ssh
+        echo "${{ secrets.VPS_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+        chmod 600 ~/.ssh/id_ed25519
+        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH OK'"
+        rsync -avz -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" ./out/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
+
 
 
