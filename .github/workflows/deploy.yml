@@ -27,17 +27,26 @@ jobs:
     - name: Generate site
       run: python generate_html.py
 
-    - name: Debug SSH command
-      run: |
-        echo "ssh -i ~/.ssh/id_ed25519 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+    # - name: Debug SSH command
+    #   run: |
+    #     echo "ssh -i ~/.ssh/id_ed25519 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
 
-    - name: Deploy manually with rsync
+    # - name: Deploy manually with rsync
+    #   run: |
+    #     mkdir -p ~/.ssh
+    #     echo "${{ secrets.VPS_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+    #     chmod 600 ~/.ssh/id_ed25519
+    #     ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH OK'"
+    #     rsync -avz -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" ./out/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
+
+    - name: Deploy with base64-decoded key
       run: |
         mkdir -p ~/.ssh
-        echo "${{ secrets.VPS_DEPLOY_KEY }}" > ~/.ssh/id_ed25519
+        echo "${{ secrets.VPS_DEPLOY_KEY_B64 }}" | base64 -d > ~/.ssh/id_ed25519
         chmod 600 ~/.ssh/id_ed25519
-        ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo 'SSH OK'"
-        rsync -avz -e "ssh -i ~/.ssh/id_ed25519 -o StrictHostKeyChecking=no" ./out/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
+        ssh-keyscan -H ${{ secrets.VPS_HOST }} >> ~/.ssh/known_hosts
 
+        ssh -vvv -i ~/.ssh/id_ed25519 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }} "echo SSH OK"
+        rsync -avz --delete -e "ssh -i ~/.ssh/id_ed25519" ./out/ ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:/var/www/html/
 
 
