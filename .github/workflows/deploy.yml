@@ -28,7 +28,7 @@ jobs:
       run: python generate.py
 
     - name: Deploy via rsync over SSH
-      uses: burnett01/rsync-deployments@v6
+      uses: burnett01/rsync-deployments@v1.1.7
       with:
         switches: -avz --delete
         path: ./out/
