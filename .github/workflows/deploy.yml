@@ -27,6 +27,10 @@ jobs:
     - name: Generate site
       run: python generate_html.py
 
+    - name: Debug SSH command
+      run: |
+        echo "ssh -i ~/.ssh/id_ed25519 ${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}"
+
     - name: Deploy manually with rsync
       run: |
         mkdir -p ~/.ssh
