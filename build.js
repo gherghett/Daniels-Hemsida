@@ -1,20 +1,20 @@
-const fs = require('fs');
-const path = require('path');
-const matter = require('gray-matter');
-const { marked } = require('marked');
-const figlet = require('figlet');
+const fs = require("fs");
+const path = require("path");
+const matter = require("gray-matter");
+const { marked } = require("marked");
+const figlet = require("figlet");
 
 // Custom renderer: wrap links in [ ]
 const renderer = new marked.Renderer();
-renderer.link = function({ href, text }) {
-    return `<a href="${href}">[${text}]</a>`;
+renderer.link = function ({ href, text }) {
+  return `<a href="${href}">[${text}]</a>`;
 };
 marked.setOptions({ renderer });
 
-const DIST = path.join(__dirname, 'dist');
-const POSTS_DIR = path.join(__dirname, 'posts');
-const CONTENT_DIR = path.join(__dirname, 'content');
-const PAGES_DIR = path.join(__dirname, 'pages');
+const DIST = path.join(__dirname, "dist");
+const POSTS_DIR = path.join(__dirname, "posts");
+const CONTENT_DIR = path.join(__dirname, "content");
+const PAGES_DIR = path.join(__dirname, "pages");
 const POSTS_PER_PAGE = 10;
 const HOME_POST_COUNT = 3;
 
@@ -40,8 +40,8 @@ const STYLE = `
             }
 
             pre, code {
-                font-family: inherit;
-                font-size: inherit;
+                // font-family: inherit;
+                // font-size: inherit;
             }
 
             ::selection {
@@ -412,7 +412,7 @@ const FOOTER = `
             </footer>`;
 
 function layout(title, bodyHTML) {
-    return `<!doctype html>
+  return `<!doctype html>
 <html lang="sv">
     <head>
         <meta charset="UTF-8" />
@@ -442,47 +442,47 @@ ${FOOTER}
 // ---------------------------------------------------------------------------
 
 function ensureDir(dir) {
-    fs.mkdirSync(dir, { recursive: true });
+  fs.mkdirSync(dir, { recursive: true });
 }
 
 function cleanDist() {
-    if (fs.existsSync(DIST)) {
-        fs.rmSync(DIST, { recursive: true });
-    }
-    ensureDir(DIST);
+  if (fs.existsSync(DIST)) {
+    fs.rmSync(DIST, { recursive: true });
+  }
+  ensureDir(DIST);
 }
 
 function readPosts() {
-    const dirs = fs.readdirSync(POSTS_DIR).filter(d =>
-        fs.statSync(path.join(POSTS_DIR, d)).isDirectory()
-    );
+  const dirs = fs
+    .readdirSync(POSTS_DIR)
+    .filter((d) => fs.statSync(path.join(POSTS_DIR, d)).isDirectory());
 
-    const posts = [];
-    for (const dir of dirs) {
-        const mdPath = path.join(POSTS_DIR, dir, 'index.md');
-        if (!fs.existsSync(mdPath)) continue;
+  const posts = [];
+  for (const dir of dirs) {
+    const mdPath = path.join(POSTS_DIR, dir, "index.md");
+    if (!fs.existsSync(mdPath)) continue;
 
-        const raw = fs.readFileSync(mdPath, 'utf-8');
-        const { data, content } = matter(raw);
-        const html = marked(content);
+    const raw = fs.readFileSync(mdPath, "utf-8");
+    const { data, content } = matter(raw);
+    const html = marked(content);
 
-        posts.push({
-            title: data.title,
-            date: new Date(data.date),
-            slug: data.slug,
-            excerpt: data.excerpt || '',
-            html,
-            sourceDir: path.join(POSTS_DIR, dir),
-        });
-    }
+    posts.push({
+      title: data.title,
+      date: new Date(data.date),
+      slug: data.slug,
+      excerpt: data.excerpt || "",
+      html,
+      sourceDir: path.join(POSTS_DIR, dir),
+    });
+  }
 
-    // Sort descending by date
-    posts.sort((a, b) => b.date - a.date);
-    return posts;
+  // Sort descending by date
+  posts.sort((a, b) => b.date - a.date);
+  return posts;
 }
 
 function formatDate(date) {
-    return date.toISOString().slice(0, 10);
+  return date.toISOString().slice(0, 10);
 }
 
 // ---------------------------------------------------------------------------
@@ -490,83 +490,77 @@ function formatDate(date) {
 // ---------------------------------------------------------------------------
 
 function figletTitle(text) {
-    const words = text.split(/\s+/);
-    const spans = words.map(word => {
-        const art = figlet.textSync(word, { font: 'Calvin S' });
-        return `<pre class="post-title-word">${art}</pre>`;
-    });
-    return `<div class="post-title">${spans.join('\n')}</div>`;
+  const words = text.split(/\s+/);
+  const spans = words.map((word) => {
+    const art = figlet.textSync(word, { font: "Calvin S" });
+    return `<pre class="post-title-word">${art}</pre>`;
+  });
+  return `<div class="post-title">${spans.join("\n")}</div>`;
 }
 
 function stripFirstHeading(html) {
-    return html.replace(/<h[1-3][^>]*>.*?<\/h[1-3]>/, '');
+  return html.replace(/<h[1-3][^>]*>.*?<\/h[1-3]>/, "");
 }
 
 function generatePostPages(posts) {
-    for (const post of posts) {
-        const outDir = path.join(DIST, 'blogg', post.slug);
-        ensureDir(outDir);
+  for (const post of posts) {
+    const outDir = path.join(DIST, "blogg", post.slug);
+    ensureDir(outDir);
 
-        const body = `
+    const body = `
             <article class="post-content" style="padding: 2lh 0;">
                 ${figletTitle(post.title)}
                 <div class="c-dim" style="margin-bottom: 1lh;">${formatDate(post.date)}</div>
 ${stripFirstHeading(post.html)}
             </article>`;
 
-        fs.writeFileSync(
-            path.join(outDir, 'index.html'),
-            layout(post.title, body)
-        );
+    fs.writeFileSync(path.join(outDir, "index.html"), layout(post.title, body));
 
-        // Copy non-md assets from source dir
-        const files = fs.readdirSync(post.sourceDir);
-        for (const file of files) {
-            if (file.endsWith('.md')) continue;
-            fs.copyFileSync(
-                path.join(post.sourceDir, file),
-                path.join(outDir, file)
-            );
-        }
+    // Copy non-md assets from source dir
+    const files = fs.readdirSync(post.sourceDir);
+    for (const file of files) {
+      if (file.endsWith(".md")) continue;
+      fs.copyFileSync(path.join(post.sourceDir, file), path.join(outDir, file));
     }
+  }
 }
 
 function generateBlogListing(posts) {
-    const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(posts.length / POSTS_PER_PAGE));
 
-    for (let page = 1; page <= totalPages; page++) {
-        const start = (page - 1) * POSTS_PER_PAGE;
-        const pagePosts = posts.slice(start, start + POSTS_PER_PAGE);
+  for (let page = 1; page <= totalPages; page++) {
+    const start = (page - 1) * POSTS_PER_PAGE;
+    const pagePosts = posts.slice(start, start + POSTS_PER_PAGE);
 
-        let postsHTML = '';
-        for (const post of pagePosts) {
-            postsHTML += `
+    let postsHTML = "";
+    for (const post of pagePosts) {
+      postsHTML += `
                 <article class="post">
                     <a href="/blogg/${post.slug}/">[* ${post.title}]</a>
                     <span> -- ${formatDate(post.date)}</span>
                     <div>${post.excerpt}</div>
                 </article>\n`;
-        }
+    }
 
-        // Pagination
-        let paginationHTML = '';
-        if (totalPages > 1) {
-            const links = [];
-            if (page > 1) {
-                const prevURL = page === 2 ? '/blogg/' : `/blogg/sida/${page - 1}/`;
-                links.push(`<a href="${prevURL}">[&lt;-- föregående]</a>`);
-            }
-            links.push(`<span>sida ${page} av ${totalPages}</span>`);
-            if (page < totalPages) {
-                links.push(`<a href="/blogg/sida/${page + 1}/">[nästa --&gt;]</a>`);
-            }
-            paginationHTML = `
+    // Pagination
+    let paginationHTML = "";
+    if (totalPages > 1) {
+      const links = [];
+      if (page > 1) {
+        const prevURL = page === 2 ? "/blogg/" : `/blogg/sida/${page - 1}/`;
+        links.push(`<a href="${prevURL}">[&lt;-- föregående]</a>`);
+      }
+      links.push(`<span>sida ${page} av ${totalPages}</span>`);
+      if (page < totalPages) {
+        links.push(`<a href="/blogg/sida/${page + 1}/">[nästa --&gt;]</a>`);
+      }
+      paginationHTML = `
                 <div class="pagination">
-                    ${links.join(' ')}
+                    ${links.join(" ")}
                 </div>`;
-        }
+    }
 
-        const body = `
+    const body = `
             <section class="posts">
                 <div class="posts-heading">
                     <span>&gt;&gt;&gt;</span>
@@ -576,36 +570,36 @@ ${postsHTML}
 ${paginationHTML}
             </section>`;
 
-        let outDir;
-        if (page === 1) {
-            outDir = path.join(DIST, 'blogg');
-        } else {
-            outDir = path.join(DIST, 'blogg', 'sida', String(page));
-        }
-        ensureDir(outDir);
-        fs.writeFileSync(path.join(outDir, 'index.html'), layout('Blogg', body));
+    let outDir;
+    if (page === 1) {
+      outDir = path.join(DIST, "blogg");
+    } else {
+      outDir = path.join(DIST, "blogg", "sida", String(page));
     }
+    ensureDir(outDir);
+    fs.writeFileSync(path.join(outDir, "index.html"), layout("Blogg", body));
+  }
 }
 
 function generateHomePage(posts) {
-    // Read intro
-    const introPath = path.join(CONTENT_DIR, 'intro.md');
-    const introHTML = fs.existsSync(introPath)
-        ? marked(fs.readFileSync(introPath, 'utf-8'))
-        : '';
+  // Read intro
+  const introPath = path.join(CONTENT_DIR, "intro.md");
+  const introHTML = fs.existsSync(introPath)
+    ? marked(fs.readFileSync(introPath, "utf-8"))
+    : "";
 
-    const latestPosts = posts.slice(0, HOME_POST_COUNT);
-    let postsHTML = '';
-    for (const post of latestPosts) {
-        postsHTML += `
+  const latestPosts = posts.slice(0, HOME_POST_COUNT);
+  let postsHTML = "";
+  for (const post of latestPosts) {
+    postsHTML += `
                 <article class="post">
                     <a href="/blogg/${post.slug}/">[* ${post.title}]</a>
                     <span> -- ${formatDate(post.date)}</span>
                     <div>${post.excerpt}</div>
                 </article>\n`;
-    }
+  }
 
-    const body = `
+  const body = `
             <section class="hero">
                 <div class="hero-welcome">
                     <span>Wälkommen</span> till Daniels
@@ -633,34 +627,34 @@ ${postsHTML}
                 </div>
             </section>`;
 
-    fs.writeFileSync(path.join(DIST, 'index.html'), layout('Daniel', body));
+  fs.writeFileSync(path.join(DIST, "index.html"), layout("Daniel", body));
 }
 
 function generateStaticPages() {
-    if (!fs.existsSync(PAGES_DIR)) return;
+  if (!fs.existsSync(PAGES_DIR)) return;
 
-    const files = fs.readdirSync(PAGES_DIR).filter(f => f.endsWith('.md'));
-    for (const file of files) {
-        const slug = path.basename(file, '.md');
-        const raw = fs.readFileSync(path.join(PAGES_DIR, file), 'utf-8');
-        const html = marked(raw);
+  const files = fs.readdirSync(PAGES_DIR).filter((f) => f.endsWith(".md"));
+  for (const file of files) {
+    const slug = path.basename(file, ".md");
+    const raw = fs.readFileSync(path.join(PAGES_DIR, file), "utf-8");
+    const html = marked(raw);
 
-        const body = `
+    const body = `
             <section class="page-content">
 ${html}
             </section>`;
 
-        const outDir = path.join(DIST, slug);
-        ensureDir(outDir);
-        fs.writeFileSync(path.join(outDir, 'index.html'), layout(slug, body));
-    }
+    const outDir = path.join(DIST, slug);
+    ensureDir(outDir);
+    fs.writeFileSync(path.join(outDir, "index.html"), layout(slug, body));
+  }
 }
 
 // ---------------------------------------------------------------------------
 // Main
 // ---------------------------------------------------------------------------
 
-console.log('Building site...');
+console.log("Building site...");
 
 cleanDist();
 
@@ -668,15 +662,15 @@ const posts = readPosts();
 console.log(`Found ${posts.length} posts`);
 
 generatePostPages(posts);
-console.log('Generated post pages');
+console.log("Generated post pages");
 
 generateBlogListing(posts);
-console.log('Generated blog listing');
+console.log("Generated blog listing");
 
 generateHomePage(posts);
-console.log('Generated home page');
+console.log("Generated home page");
 
 generateStaticPages();
-console.log('Generated static pages');
+console.log("Generated static pages");
 
 console.log(`Done! Output in ${DIST}`);
