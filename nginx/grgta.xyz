@@ -1,0 +1,86 @@
+# Server block for the specific IPv6 address on HTTP
+server {
+    listen [2a02:247a:233:9000::1]:80;
+    server_name [2a02:247a:233:9000::1];
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location /stuff {
+        alias /var/www/stuff;
+        try_files $uri $uri/ =404;
+    }
+
+    location /stuff/pinball {
+        alias /var/www/stuff/pinball;
+        try_files $uri $uri/ =404;
+        add_header Cross-Origin-Embedder-Policy "require-corp";
+        add_header Cross-Origin-Opener-Policy "same-origin";
+    }
+
+}
+
+# HTTP server block for grgta.xyz (redirect to HTTPS)
+server {
+    listen 80;
+    server_name grgta.xyz;
+    return 301 https://grgta.xyz$request_uri;
+}
+
+# HTTP server block for www.grgta.xyz (redirect to HTTPS)
+server {
+    listen 80;
+    server_name www.grgta.xyz;
+    return 301 https://www.grgta.xyz$request_uri;
+}
+
+# HTTPS server block for grgta.xyz and www.grgta.xyz
+server {
+    listen 443 ssl http2;
+    server_name grgta.xyz www.grgta.xyz;
+
+    root /var/www/html;
+    index index.html index.htm index.nginx-debian.html;
+
+    ssl_certificate /etc/ssl/certs/grgta.xyz_fullchain.pem;
+    ssl_certificate_key /etc/ssl/private/_.grgta.xyz_private_key.key;
+
+    # ---- 301 redirects from old site ----
+    location = /artiklar.html { return 301 /blogg/; }
+    location = /kontakt.html  { return 301 /kontakt/; }
+
+    location = /art/2023_12_01_BloggArne.html                              { return 301 /blogg/bloggarne/; }
+    location = /art/2023_12_05_Advent.html                                  { return 301 /blogg/advent/; }
+    location ~ "^/art/2023_12_18_\s?Snake\.html$"                           { return 301 /blogg/snake/; }
+    location = /art/2023_12_18_Hemsida.html                                 { return 301 /blogg/hemsida/; }
+    location = /art/2023_12_26_Pinball.html                                 { return 301 /blogg/pinball/; }
+    location = /art/2024_03_02_Bokbörsen_Sökförbättring.html                { return 301 /blogg/bokborsen-sokforbattring/; }
+    location = /art/2025_01_08_Pseudo-faksimil_av_Alexander_den_Store.html  { return 301 /blogg/alexander-den-store/; }
+
+    location = /images/snake.png               { return 301 /blogg/snake/snake.png; }
+    location = /images/sidhuvud_alexander.png   { return 301 /blogg/alexander-den-store/sidhuvud_alexander.png; }
+    location = /images/alex_den_store_split.png { return 301 /blogg/alexander-den-store/alex_den_store_split.png; }
+
+    location = /Alexander_den_Store_2023.pdf { return 301 /blogg/alexander-den-store/Alexander_den_Store_2023.pdf; }
+
+    location / {
+        try_files $uri $uri/ =404;
+    }
+
+    location /stuff {
+        alias /var/www/stuff;
+        try_files $uri $uri/ =404;
+    }
+
+    location /stuff/pinball {
+        alias /var/www/stuff/pinball;
+        try_files $uri $uri/ =404;
+        add_header Cross-Origin-Embedder-Policy "require-corp";
+        add_header Cross-Origin-Opener-Policy "same-origin";
+    }
+
+}
