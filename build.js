@@ -54,6 +54,7 @@ const STYLE = `
                 color: #e0e0e0;
                 min-height: 100vh;
                 padding: 0 3ch;
+                overflow-x: hidden;
             }
 
             a {
@@ -632,7 +633,7 @@ ${postsHTML}
                 </div>
             </section>`;
 
-    fs.writeFileSync(path.join(DIST, 'index.html'), layout('daniel gherghetta.xyz', body));
+    fs.writeFileSync(path.join(DIST, 'index.html'), layout('Daniel', body));
 }
 
 function generateStaticPages() {
