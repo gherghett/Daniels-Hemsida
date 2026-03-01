@@ -5,11 +5,11 @@ slug: hemsida
 excerpt: "Hur jag byggde min första hemsida med en Python-baserad static site generator."
 ---
 
-## Hemsida med Static Site Generation
+# Hemsida med Static Site Generation
 
 Det hade varit bra med ett ställe att samla projekt och artiklar, så jag vill göra mig en enkel hemsida.
 
-### Vad är, och varför, SSG
+## Vad är, och varför, SSG
 
 Istället för att blåsa upp en hel MVC eller sätta igång en Wordpress tänker jag försöka hålla det light weight. Men att bara sätta ihop en helt statisk webbplats med HTML kan bli mer jobb i längden eftersom det är så bökigt när något behövs ändras eller läggas till.
 
@@ -19,7 +19,7 @@ Det finns alltså en back-end, men det körs bara en gång, när hemsidan behöv
 
 Med SSG behövs inget system som måste vara igång förutom en http server. Det finns inget live CMS att ha logins till, och ingen databas över huvud taget så komplexiteten hålls minimal och säkerhetsbeskymmer är likså nästan obefintliga.
 
-### Hur det funkar
+## Hur det funkar
 
 Jag tänker med python generera en hemsida från Markdown-filer, denna artikel ser ut såhär t.ex
 
@@ -27,7 +27,7 @@ Jag tänker med python generera en hemsida från Markdown-filer, denna artikel s
 
     Det hade varit bra med ett ställe att samla projekt och artiklar, så jag vill göra mig en enkel hemsida.
 
-    ### Vad är, och varför, SSG
+    ##Vad är, och varför, SSG
 
     Istället för att blåsa upp en hel MVC eller sätta igång en Wordpress tänker jag försöka hålla det light weight. Men att bara sätta ihop en helt statisk webbplats med HTML kan bli mer jobb i längden eftersom det är så bökigt när något behövs ändras eller läggas till.
 
@@ -65,7 +65,7 @@ efter att huvudscriptet är kört ser *out* foldern (den färdiga hemsidan) ut s
 
 index.html som startsida och de andra sidorna i sina helheter som html dokument. Mycket html är duplicerat på varje sida, och det är också det som är poängen, iställer för att generera varje sida varje gång någon vill se den. Det är säkert en dålig idé att ha ett filnamn med ö, men det är ju 2023 så jag testar.
 
-### Utmaningar och Lösningar
+## Utmaningar och Lösningar
 
 Till denna artikel hade jag inte tidigare tänk på hur ett codeblock skulle se ut, men det skötte markdown. Sen ville jag applicera bootstrapstilar på alla `<pre>` element. Om jag bara hade vanlig CSS hade det inte varit något problem, men nu var jag alltså tvungen att i htmlen lägga till en CSS stil till varje `<pre>` element. Detta kommer jag behöva göra för varje stil som ska gälla över hela sidan som inte är ett vanligt värde i bootstrap.
 
@@ -82,7 +82,7 @@ Till denna artikel hade jag inte tidigare tänk på hur ett codeblock skulle se 
 
         return str(soup)
 
-### Slutet gott
+## Slutet gott
 
 I slutändan var det förvånandsvärt straight forward och utan komplikatoner. Det var givande att lära sig grunderna av bootstrap som jag är mycket imponerad av. Rent tekninskt var att få alla relativa länkar att stämma oavsett om de är i en folder osv var lite utmanande men det löste sig fint. Bilder har jag inte övervägt än men markdown verkar stödja det. Jag kommer ladda upp dem och referera dem i de relevant markdown filerna.
 

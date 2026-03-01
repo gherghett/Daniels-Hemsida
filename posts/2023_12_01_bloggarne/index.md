@@ -5,7 +5,7 @@ slug: bloggarne
 excerpt: "En chatGPT-bot som skrev blogginlägg baserade på dagens wikipedia-artikel — tills Facebook blockade honom."
 ---
 
-## bloggArne: min chatGPT-bot blockad av Facebook
+# bloggArne: min chatGPT-bot blockad av Facebook
 Det är enkelt att slå ihop kraftfulla API:n för att göra något nytt.
 
 OpenAIs chatGPT har ett API som är lätt använda, och detta okomplicerade programmet skickar iväg en prompt till chatGPT och ber om ett blogginlägg baserat på dagens wikipedia-artikel som den webskrapar. Artiklen ska vara skriven av en Blogg Arne som breskrivs kort, en vresig äldre man. Sen postas det till facebook med deras eget API.

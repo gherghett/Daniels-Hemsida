@@ -5,7 +5,7 @@ slug: alexander-den-store
 excerpt: "En översättning med översatt design — att återskapa formgivningen från en 1800-talsbok i LaTeX."
 ---
 
-## Pseudo-faksimil av Alexander den Store
+# Pseudo-faksimil av Alexander den Store
 
 En översättning med översatt design.
 

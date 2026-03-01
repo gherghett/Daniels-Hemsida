@@ -4,6 +4,13 @@ const matter = require('gray-matter');
 const { marked } = require('marked');
 const figlet = require('figlet');
 
+// Custom renderer: wrap links in [ ]
+const renderer = new marked.Renderer();
+renderer.link = function({ href, text }) {
+    return `<a href="${href}">[${text}]</a>`;
+};
+marked.setOptions({ renderer });
+
 const DIST = path.join(__dirname, 'dist');
 const POSTS_DIR = path.join(__dirname, 'posts');
 const CONTENT_DIR = path.join(__dirname, 'content');
@@ -32,6 +39,11 @@ const STYLE = `
                 line-height: 1.5;
             }
 
+            pre, code {
+                font-family: inherit;
+                font-size: inherit;
+            }
+
             ::selection {
                 background: #e0e0e0;
                 color: #0a0a0a;
@@ -50,11 +62,15 @@ const STYLE = `
                 position: relative;
             }
 
+            a:hover {
+                background: #1a2a2a;
+            }
+
             a::after {
                 content: " (" attr(href) ")";
                 position: absolute;
                 white-space: nowrap;
-                color: #e0e0e0;
+                color: #b48ead;
                 background: #1a1a1a;
                 pointer-events: none;
                 z-index: 1000;
@@ -242,14 +258,47 @@ const STYLE = `
                 margin-bottom: 0;
             }
 
+            .post a {
+                color: #7ec8c8;
+            }
+
             /* ---- POST CONTENT ---- */
-            .post-content h2 {
+            .post-content h2,
+            .post-content h3,
+            .page-content h2,
+            .page-content h3 {
+                font-size: inherit;
+                font-weight: normal;
+            }
+
+            .post-content h2,
+            .page-content h2 {
+                text-align: center;
+                overflow: hidden;
+                margin-top: 1lh;
                 margin-bottom: 1lh;
             }
 
-            .post-content h3 {
+            .post-content h2::before,
+            .post-content h2::after,
+            .page-content h2::before,
+            .page-content h2::after {
+                content: "=========================================================================================================================";
+                display: block;
+                overflow: hidden;
+                white-space: nowrap;
+            }
+
+            .post-content h3,
+            .page-content h3 {
                 margin-top: 1lh;
                 margin-bottom: 1lh;
+                font-weight: bold;
+            }
+
+            .post-content h3::before,
+            .page-content h3::before {
+                content: "### ";
             }
 
             .post-content p {
@@ -272,9 +321,10 @@ const STYLE = `
                 border: none;
                 padding: 0;
                 margin: 0;
-                line-height: 1.2;
+                line-height: 1;
                 display: inline-block;
                 color: #e0e0e0;
+                font-family: "Courier New", monospace;
             }
 
             .post-content pre:not(.post-title-word) {
@@ -297,18 +347,14 @@ const STYLE = `
                 margin-bottom: 1lh;
             }
 
-            .post-content a {
-                text-decoration: underline;
-                text-decoration-style: dashed;
+            .post-content a,
+            .page-content a {
+                color: #7ec8c8;
             }
 
             /* ---- PAGE CONTENT ---- */
             .page-content {
                 padding: 2lh 0;
-            }
-
-            .page-content h2 {
-                margin-bottom: 1lh;
             }
 
             .page-content p {
@@ -318,11 +364,6 @@ const STYLE = `
             .page-content ul, .page-content ol {
                 margin-bottom: 1lh;
                 padding-left: 4ch;
-            }
-
-            .page-content a {
-                text-decoration: underline;
-                text-decoration-style: dashed;
             }
 
             /* ---- PAGINATION ---- */
@@ -358,14 +399,14 @@ const HEADER = `
                     <a href="/blogg/" class="c-yellow">[blogg]</a>
                     <a href="/kontakt/" class="c-yellow">[kontakt]</a>
                     <span>|</span>
-                    <a href="https://github.com/dgherghetta">[github]</a>
-                    <a href="https://linkedin.com/in/danielgherghetta">[linkedin]</a>
+                    <a href="https://github.com/gherghett">[github]</a>
+                    <a href="https://www.linkedin.com/in/daniel-gherghetta-940a7b298/">[linkedin]</a>
                 </div>
             </header>`;
 
 const FOOTER = `
             <footer>
-                <span>&copy; 2026 daniel </span><span class="c-red">grgta</span><span>.xyz</span>
+                <span>&copy; 2026 daniel </span><span class="c-red">grgta.xyz</span>
                 <span style="float: right">~~~ tack för besöket ~~~</span>
             </footer>`;
 
@@ -567,12 +608,12 @@ function generateHomePage(posts) {
             <section class="hero">
                 <div class="hero-welcome">
                     <span>Wälkommen</span> till Daniels
-                    personliga hemsida<span class="c-red">! :D</span>
+                    personliga hemsida! :D
                 </div>
                 <div class="hero-links">
                     <span>&gt;</span> kolla
                     <a href="/blogg/" class="c-yellow">[min blogg]</a> eller
-                    <a href="https://github.com/dgherghetta">[min github]</a>
+                    <a href="https://github.com/gherghett">[min github]</a>
                     eller
                     <a href="https://kart.grgta.xyz">[spela kart racern]</a>
                 </div>

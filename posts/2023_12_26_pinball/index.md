@@ -5,7 +5,7 @@ slug: pinball
 excerpt: "Kanske det sämsta sortens spel att göra i Godot, Pinball — men det var roligt."
 ---
 
-## Godot, spelmotor som funkar på alla platformar
+# Godot, spelmotor som funkar på alla platformar
 
 Kanske det sämsta sortens spel att göra i Godot, Pinball.
 

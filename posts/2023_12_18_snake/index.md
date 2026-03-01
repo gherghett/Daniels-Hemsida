@@ -5,7 +5,7 @@ slug: snake
 excerpt: "Klassiska Snake i helt vanlig JavaScript — all grafik är bara HTML/CSS."
 ---
 
-## Snake i JavaScript
+# Snake i JavaScript
 
 Eftersom jag aldrig gjort något speciellt avancerat i JS tänkte jag göra klassiska SNAKE i helt vanlig JavaScript.
 
